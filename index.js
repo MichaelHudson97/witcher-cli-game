@@ -1,5 +1,6 @@
 const prompts = require('prompts');
 
+const sneakResult = Math.random() > 0.5;
 const questions = [
   {
     type: 'confirm',
@@ -15,6 +16,41 @@ const questions = [
       { title: 'Ciri', value: 'Ciri' },
       { title: 'Yennefer', value: 'Yennefer' },
     ],
+  },
+  {
+    type: 'select',
+    name: 'weapon',
+    message: 'Choose your weapon',
+    choices: [
+      { title: 'silver sword', value: 'silverSword' },
+      { title: 'dagger', value: 'dagger' },
+      { title: 'crossbow', value: 'crossbow' },
+    ],
+  },
+  {
+    type: 'select',
+    name: 'nightWraith',
+    message: 'You stumble upon a night wraith. What do you do?',
+    choices: [
+      { title: 'fight', value: 'fight' },
+      { title: 'run away', value: 'runAway' },
+      { title: 'sneak', value: 'sneak' },
+    ],
+  },
+  {
+    type: prev => prev == 'runAway' ? 'confirm' : null,
+    name: 'nightWraithRunAway',
+    message: 'You got away safely! Ready to continue on your journey?'
+  },
+  {
+    type: prev => prev == 'sneak' ? 'confirm' : null,
+    name: 'nightWraithSneak',
+    message: sneakResult ? 'You snuck by safely! Ready to continue on your journey?' : 'Oh no it saw you! Ready to fight?'
+  },
+  {
+    type: (prev, values) => values.nightWraith == 'fight' || (values.nightWraith === 'sneak' && sneakResult === false) ? 'confirm' : null,
+    name: 'nightWraithFight',
+    message: 'fight'
   },
 ];
 
