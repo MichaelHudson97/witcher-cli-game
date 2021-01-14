@@ -1,6 +1,9 @@
 const prompts = require('prompts');
 
 const sneakResult = Math.random() > 0.5;
+let yourHP = 100;
+let nightWraithHP = 5;
+
 const questions = [
   {
     type: 'confirm',
@@ -22,9 +25,9 @@ const questions = [
     name: 'weapon',
     message: 'Choose your weapon',
     choices: [
-      { title: 'silver sword', value: 'silverSword' },
-      { title: 'dagger', value: 'dagger' },
-      { title: 'crossbow', value: 'crossbow' },
+      { title: 'Silver sword', value: 'silverSword' },
+      { title: 'Dagger', value: 'dagger' },
+      { title: 'Crossbow', value: 'crossbow' },
     ],
   },
   {
@@ -32,25 +35,47 @@ const questions = [
     name: 'nightWraith',
     message: 'You stumble upon a night wraith. What do you do?',
     choices: [
-      { title: 'fight', value: 'fight' },
-      { title: 'run away', value: 'runAway' },
-      { title: 'sneak', value: 'sneak' },
+      { title: 'Fight', value: 'fight' },
+      { title: 'Run away', value: 'runAway' },
+      { title: 'Sneak', value: 'sneak' },
     ],
   },
   {
-    type: prev => prev == 'runAway' ? 'confirm' : null,
+    type: prev => prev === 'runAway' ? 'confirm' : null,
     name: 'nightWraithRunAway',
-    message: 'You got away safely! Ready to continue on your journey?'
+    message: 'You got away safely! Ready to continue on your journey?',
   },
   {
-    type: prev => prev == 'sneak' ? 'confirm' : null,
+    type: prev => prev === 'sneak' ? 'confirm' : null,
     name: 'nightWraithSneak',
-    message: sneakResult ? 'You snuck by safely! Ready to continue on your journey?' : 'Oh no it saw you! Ready to fight?'
+    message: sneakResult ? 'You snuck by safely! Ready to continue on your journey?' : 'Oh no! It saw you! Ready to fight?',
   },
   {
-    type: (prev, values) => values.nightWraith == 'fight' || (values.nightWraith === 'sneak' && sneakResult === false) ? 'confirm' : null,
+    type: (prev, values) => values.nightWraith === 'fight' || (values.nightWraith === 'sneak' && sneakResult === false) ? 'number' : null,
     name: 'nightWraithFight',
-    message: 'fight'
+    message: `Fight! Enter a number to attack.`,
+    validate: () => {
+      if (yourHP <= 0 || nightWraithHP <= 0) {
+        return true;
+      } else {
+        const damageToYou = Math.ceil(Math.random() * 5);
+        const damageToNightWraith = Math.ceil(Math.random() * 3);
+
+        yourHP -= damageToYou;
+        nightWraithHP -= damageToNightWraith;
+
+        if (yourHP <= 0 || nightWraithHP <= 0) {
+          return true;
+        } else {
+          return `Fight! You have ${yourHP} HP. The night wraith has ${nightWraithHP} HP. Enter a number to attack.`
+        }
+      }
+    }
+  },
+  {
+    type: 'confirm',
+    name: 'battleOneCheckpoint',
+    message: prev => `Your current health is ${yourHP} HP.`,
   },
 ];
 
